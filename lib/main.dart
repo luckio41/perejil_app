@@ -10,6 +10,13 @@ const apiKey = 'c0263648253fb8870543c4e61d4586f6';
 
 const nowPlayingUrl =
     "${baseUrl}now_playing?api_key=${apiKey}&language=es-ES&page=1";
+const upcomingUrl =
+    "${baseUrl}upcoming?api_key=${apiKey}&language=es-ES&page=1";
+const popularUrl =
+    "${baseUrl}popular?api_key=${apiKey}&language=es-ES&page=1";
+const topRatedUrl =
+    "${baseUrl}top_rated?api_key=${apiKey}&language=es-ES&page=1";
+
 
 void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -25,11 +32,17 @@ class PerejilApp extends StatefulWidget {
 
 class _PerejilApp extends State<PerejilApp> {
   Movie nowPlayingMovies;
+  Movie upcomingMovies;
+  Movie popularMovies;
+  Movie topRatedMovies;
 
   @override
   void initState() {
     super.initState();
     _fetchNowPlayMovies();
+    _fetchUpcomingMovies();
+    _fetchPopularMovies();
+    _fetchTopRatedMovies();
   }
 
   void _fetchNowPlayMovies() async {
@@ -39,12 +52,35 @@ class _PerejilApp extends State<PerejilApp> {
       nowPlayingMovies = Movie.fromJson(decodeJson);
     });
   }
+  void _fetchUpcomingMovies() async {
+    var response = await http.get(upcomingUrl);
+    var decodeJson = jsonDecode(response.body);
+    setState(() {
+      upcomingMovies = Movie.fromJson(decodeJson);
+    });
+  }
+  void _fetchPopularMovies() async {
+    var response = await http.get(popularUrl);
+    var decodeJson = jsonDecode(response.body);
+    setState(() {
+      popularMovies = Movie.fromJson(decodeJson);
+    });
+  }
+  void _fetchTopRatedMovies() async {
+    var response = await http.get(topRatedUrl);
+    var decodeJson = jsonDecode(response.body);
+    setState(() {
+      topRatedMovies = Movie.fromJson(decodeJson);
+    });
+  }
 
   Widget _buildCarouselSlider() => CarouselSlider(
-        items: nowPlayingMovies.results
-            .map((movieItem) =>
-                Image.network("${baseImageUrl}w342${movieItem.posterPath}"))
-            .toList(),
+        items: nowPlayingMovies == null
+            ? <Widget>[Center(child: CircularProgressIndicator())]
+            : nowPlayingMovies.results
+                .map((movieItem) =>
+                    Image.network("${baseImageUrl}w342${movieItem.posterPath}"))
+                .toList(),
         autoPlay: false,
         height: 240.0,
         viewportFraction: 0.5,
@@ -98,13 +134,8 @@ class _PerejilApp extends State<PerejilApp> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 35.0),
-                      child: Column(
-                        children: nowPlayingMovies == null ? <Widget>[
-                          Center(child: CircularProgressIndicator(),)
-                        ] : <Widget>[_buildCarouselSlider()],
-                      ),
-                    )
+                        padding: const EdgeInsets.only(top: 35.0),
+                        child: _buildCarouselSlider())
                   ],
                 ),
               ),
