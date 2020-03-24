@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import './models/movieDetailModel.dart';
 import 'dart:convert';
 import './models/movie.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
+import 'movieDetail.dart';
+
 
 const baseUrl = 'https://api.themoviedb.org/3/movie/';
 const baseImageUrl = 'https://image.tmdb.org/t/p/';
@@ -34,6 +38,8 @@ class _PerejilApp extends State<PerejilApp> {
   Movie popularMovies;
   Movie topRatedMovies;
   int heroTag = 0;
+  int _currentIndex = 0;
+
 
   @override
   void initState() {
@@ -96,7 +102,7 @@ class _PerejilApp extends State<PerejilApp> {
               Padding(
                   padding: EdgeInsets.only(left: 6.0, top: 2.0),
                   child: Text(
-                    movieItem.releaseDate,
+                    DateFormat('yyyy').format(DateTime.parse(movieItem.releaseDate)),
                     style: TextStyle(fontSize: 8.0),
                   ))
             ],
@@ -105,11 +111,15 @@ class _PerejilApp extends State<PerejilApp> {
       );
 
   Widget _buildMovieItem(Results movieItem) {
-    heroTag += 1;
+    heroTag++;
     return Material(
         elevation: 15.0,
         child: InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) => MovieDetail(movie: movieItem,)
+              ));
+            },
             child: Hero(
                 tag: heroTag,
                 child: Image.network(
@@ -218,6 +228,27 @@ class _PerejilApp extends State<PerejilApp> {
             _buildMoviesListView(topRatedMovies, 'TOP RATED')
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        fixedColor: Colors.lightBlue,
+        currentIndex: _currentIndex,
+        onTap: (int index) {
+          setState(() => _currentIndex = index);
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_movies),
+            title: Text('All Movies'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.tag_faces),
+            title: Text('Tickets'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            title: Text('Account'),
+          )
+        ]
       ),
     );
   }

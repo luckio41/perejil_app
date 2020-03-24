@@ -73,7 +73,7 @@ class Results {
       this.releaseDate});
 
   Results.fromJson(Map<String, dynamic> json) {
-    popularity = json['popularity'];
+    //popularity = json['popularity'];
     voteCount = json['vote_count'];
     video = json['video'];
     posterPath = json['poster_path'];
