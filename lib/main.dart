@@ -111,7 +111,9 @@ class _PerejilApp extends State<PerejilApp> {
       );
 
   Widget _buildMovieItem(Results movieItem) {
-    heroTag++;
+    heroTag += 1;
+    movieItem.heroTag = heroTag;
+    
     return Material(
         elevation: 15.0,
         child: InkWell(
